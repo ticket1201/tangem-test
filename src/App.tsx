@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+import AlertLinear from "./components/AlertLinear";
+import AlertSqr from "./components/AlertSqr";
+import {useEffect, useRef, useState} from "react";
+import {localStorage} from "./utils/localstorate";
+import useInViewport from "./hooks/useInViewPort";
 
 function App() {
+  const alertLinearRef = useRef(null)
+  const isAlertLinearInViewport = useInViewport(alertLinearRef)
+  const [isAlertSqrShow, setIsAlertSqrShow] = useState(true)
+
+  const handleAlertSqrClose = () => {
+    setIsAlertSqrShow(false)
+    localStorage.setSqrAlertState('hidden')
+  }
+
+  useEffect(() => {
+    if (localStorage.getSqrAlertState() === 'hidden') {
+      setIsAlertSqrShow(false)
+    }
+  }, [])
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="App">
+      <AlertLinear ref={alertLinearRef}/>
+      <AlertSqr isShow={isAlertSqrShow && alertLinearRef?.current !== null && !isAlertLinearInViewport} onCloseClick={handleAlertSqrClose}/>
+    </main>
   );
 }
 
